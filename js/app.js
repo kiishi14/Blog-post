@@ -77,7 +77,7 @@ postForm.addEventListener('submit', function (e) {
                                 <p class="card-text mb-1 card-content">${content.value.slice(0,50)}</p>
                                 <p class="card-text text-info">${author.value}</p>
                                 <div class="buttons">
-                                <a href="#" class="btn btn-primary">View More</i></a>
+                                <a href="#" class="btn btn-primary" onclick="viewPost(${dataArray[defaultPost].id})">View More</i></a>
                                     <i class="bi bi-pencil-square btn btn-primary" id="update-btn" ></i>
                                     
                                     <i class="bi bi-trash-fill text-white btn btn-danger" id="delete-btn"></i>
@@ -177,8 +177,12 @@ let id = e.target.parentElement.parentElement.parentElement.parentElement.datase
             cardTitle.innerHTML = title.value;
             cardContent.innerHTML = content.value;
             overlayCreate.classList.remove(`show-create-post`);
+            title.value = "";
+            content.value = "";
         });
         })
+        
+            
     }
     
 });
