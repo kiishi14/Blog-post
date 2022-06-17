@@ -10,7 +10,6 @@ const postForm = document.querySelector(".post-form");
 const latestBtn = document.querySelector(".latest-btn");
 const heading = document.querySelector(".heading");
 const updateBtn = document.querySelector(".update-btn");
-
 // data array
 let dataArray = [];
 
@@ -37,13 +36,15 @@ heading.style.display = "none";
 // open overlay
 createBtn.addEventListener("click", () => {
     overlayCreate.classList.add(`show-create-post`);
+    submitBtn.innerHTML = "SUBMIT"
+
 });
 
 // close overlay
 closeOverlay.addEventListener("click", () => {
     overlayCreate.classList.remove(`show-create-post`);
-    // title.value = "";
-    // content.value = "";
+    title.value = "";
+    content.value = "";
 });
 
 // POST METHOD
@@ -77,7 +78,7 @@ postForm.addEventListener('submit', function (e) {
                                 <p class="card-text text-info">${author.value}</p>
                                 <div class="buttons">
                                 <a href="#" class="btn btn-primary">View More</i></a>
-                                    <i class="bi bi-pencil-square btn btn-primary" id="update-btn" onclick="updatePost(${dataArray[defaultPost].id})"></i>
+                                    <i class="bi bi-pencil-square btn btn-primary" id="update-btn" ></i>
                                     
                                     <i class="bi bi-trash-fill text-white btn btn-danger" id="delete-btn"></i>
                                 </div>
@@ -114,7 +115,7 @@ latestBtn.addEventListener("click", function () {
                                 <p class="card-text text-info">${authorArray[i].author}</p>
                                 <div class="buttons">
                                     <button class="align-self-end btn btn-primary" id="view-btn" onclick="viewPost(${dataArray[i].id})">View More</i></button>
-                                    <i class="bi bi-pencil-square btn btn-primary" id="update-btn" onclick="updatePost(${dataArray[i].id})"></i>
+                                    <i class="bi bi-pencil-square btn btn-primary" id="update-btn"></i>
                                     
                                     <i class="bi bi-trash-fill text-white btn btn-danger" id="delete-btn"></i>
                                 </div>
@@ -127,7 +128,7 @@ latestBtn.addEventListener("click", function () {
         });
 });
 
-// DELETE METHOD
+// DELETE & UPDATE METHOD
 postContainer.addEventListener("click", function(e){
 let deleteBtn = e.target.id == "delete-btn"
 let id = e.target.parentElement.parentElement.parentElement.parentElement.dataset.id
@@ -141,45 +142,86 @@ let id = e.target.parentElement.parentElement.parentElement.parentElement.datase
         e.target.parentElement.parentElement.parentElement.parentElement.remove()
     })
     }
+
+    let updateBtn = e.target.id == "update-btn"
+    if(updateBtn){
+        overlayCreate.classList.add(`show-create-post`);
+        submitBtn.innerHTML = "UPDATE"
+
+        let cardTitle = e.target.parentElement.parentElement.firstChild.nextElementSibling.nextElementSibling;
+        title.value = cardTitle.textContent;
+
+        let cardContent = e.target.parentElement.parentElement.firstChild.nextElementSibling.nextElementSibling.nextElementSibling;
+        content.value = cardContent.textContent;
+
+        author.placeholder = "CAN NOT BE CHANGED!!"
+
+        let updateId = e.target.parentElement.parentElement.parentElement.dataset.id
+    
+
+        submitBtn.addEventListener("click", function(e) {
+            e.preventDefault()
+        fetch(`https://jsonplaceholder.typicode.com/posts/${updateId}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+        title: title.value,
+        body: content.value,
+        }),
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+        },
+        })
+        .then((response) => response.json())
+        .then((json) => {
+            console.log(json);
+            cardTitle.innerHTML = title.value;
+            cardContent.innerHTML = content.value;
+            overlayCreate.classList.remove(`show-create-post`);
+        });
+        })
+    }
+    
 });
 
 // UPDATE method
-function updatePost(id) {
-    fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify({
-        id: id,
-        title: title.value,
-        body: content.value,
-        userId: 1,
-}),
-    headers: {
-    'Content-type': 'application/json; charset=UTF-8',
-},
-})
-    .then((response) => response.json())
-    .then((json) => {
 
-        console.log(json)
-        let updateTitle = document.querySelectorAll(".card-title")
-        let updateContent = document.querySelectorAll(".card-content")
-        for (i = 0; i < 7; i++) {
-            if(i + 1 === id ){
-                if(title.value  !== ""){
-                    updateTitle[i].innerHTML = title.value
-                }
+
+// function updatePost(id) {
+//     fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
+//     method: 'PUT',
+//     body: JSON.stringify({
+//         id: id,
+//         title: title.value,
+//         body: content.value,
+//         userId: 1,
+// }),
+//     headers: {
+//     'Content-type': 'application/json; charset=UTF-8',
+// },
+// })
+//     .then((response) => response.json())
+//     .then((json) => {
+
+//         console.log(json)
+//         let updateTitle = document.querySelectorAll(".card-title")
+//         let updateContent = document.querySelectorAll(".card-content")
+//         for (i = 0; i < 7; i++) {
+//             if(i + 1 === id ){
+//                 if(title.value  !== ""){
+//                     updateTitle[i].innerHTML = title.value
+//                 }
                 
-            }
-        }
-        for (i = 0; i < 7; i++) {
-            if(i + 1 === id ){
-                if(content.value  !== ""){
-                updateContent[i].innerHTML = content.value
-                }
-            }
-        }
-    });
-}
+//             }
+//         }
+//         for (i = 0; i < 7; i++) {
+//             if(i + 1 === id ){
+//                 if(content.value  !== ""){
+//                 updateContent[i].innerHTML = content.value
+//                 }
+//             }
+//         }
+//     });
+// }
 
 // view
 function viewPost(id) {
